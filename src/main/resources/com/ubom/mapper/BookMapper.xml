@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ubom.mapper.BookMapper">
+    <delete id="deleteById">
+        delete
+        from t_book
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+<!--    根据用户ID删除书籍记录-->
+    <delete id="deleteByUserId">
+            delete
+            from t_book
+        <where>
+            user_id in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+        </where>
+    </delete>
+
+    <!--    &lt;!&ndash; 插入一条新的书籍记录 &ndash;&gt;-->
+    <!--    <insert id="insert">-->
+    <!--        insert into t_book(bookname, price, author, description, image, user_id, create_time, update_time)-->
+    <!--        values(#{bookName}, #{price}, #{author}, #{description}, #{image}, #{userId}, #{createTime}, #{updateTime})-->
+    <!--    </insert>-->
+
+    <!--    &lt;!&ndash; 查询所有书籍记录 &ndash;&gt;-->
+    <!--    <select id="list" resultType="com.ubom.pojo.Book">-->
+    <!--        select * from t_book-->
+    <!--    </select>-->
+
+    <!--    &lt;!&ndash; 根据ID删除书籍记录 &ndash;&gt;-->
+    <!--    <delete id="deleteById">-->
+    <!--        delete from t_book where id = #{id}-->
+    <!--    </delete>-->
+
+<!--    根据条件查询-->
+    <select id="list" resultType="com.ubom.pojo.Book">
+        select *
+        from t_book
+        <where>
+            <if test="searchFactor.bookName != null and searchFactor.bookName!=''">
+                and bookname like concat('%', #{searchFactor.bookName}, '%')
+            </if>
+            <if test="searchFactor.author != null and searchFactor.author!=''">
+                and author like concat('%', #{searchFactor.author}, '%')
+            </if>
+            <if test="searchFactor.bottomPrice != null and searchFactor.topPrice != null and searchFactor.bottomPrice!='' and searchFactor.topPrice!='' ">
+                and price between #{searchFactor.bottomPrice} and #{searchFactor.topPrice}
+            </if>
+            <if test="beginDate!=null and endDate!=null">
+                and create_time between #{beginDate} and #{endDate}
+            </if>
+        </where>
+    </select>
+
+    <!-- 更新书籍信息 -->
+    <update id="update">
+        update t_book
+        <set>
+            <if test="bookName != null">
+                bookname = #{bookName},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="author != null">
+                author = #{author},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="image != null">
+                image = #{image},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>
